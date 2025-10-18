@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<div id="categories">
+</div>
+
+<div id="products"></div>
+<div id="pagination"></div>
+
+<script>
+function loadProducts(categoryId, page=1){
+  fetch(`ajax_products.php?category_id=${categoryId}&page=${page}`)
+    .then(r => r.json())
+    .then(data => {
+      const prod = document.getElementById('products');
+      prod.innerHTML = data.products.map(p =>
+        `<div class="card">
+           <img src="${p.thumb_path}" alt="${p.name}" />
+           <h4>${p.name}</h4>
+           <p>₹${p.price}</p>
+         </div>`
+      ).join('');
+      let pag = '';
+      for(let i=1;i<=data.pages;i++){
+        pag += `<button onclick="loadProducts(${categoryId},${i})">${i}</button>`;
+      }
+      document.getElementById('pagination').innerHTML = pag;
+    });
+}
+
+document.querySelectorAll('.cat').forEach(a=>{
+  a.addEventListener('click', e=>{
+    e.preventDefault();
+    const id = a.dataset.id;
+    loadProducts(id,1);
+  });
+});
+</script>
+
+</body>
+</html>
